@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./run_demo.bat)",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:docs.crewai.com)",
+      "WebFetch(domain:aws.amazon.com)",
+      "WebFetch(domain:langchain-ai.github.io)",
+      "WebFetch(domain:scrapegraphai.com)",
+      "Bash(pip show:*)",
+      "Bash(dir)",
+      "Bash(dir:*)",
+      "Bash(C:UsersHouseAppDataLocalProgramsPythonPython310python.exe -m src.fault_diagnosis.cli fault-diagnosis --quiet)",
+      "Bash(python:*)",
+      "Bash(venvScripts:*)",
+      "Bash(.venvScriptsactivate)",
+      "Bash(\"venv/Scripts/python.exe\" -m src.fault_diagnosis.cli fault-diagnosis --quiet)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

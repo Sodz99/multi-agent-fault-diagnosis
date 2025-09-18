@@ -1,0 +1,81 @@
+{
+  "fixtures": [
+    {
+      "id": "FD-ALRT-017",
+      "path": "alert_fd-alrt-017.json",
+      "description": "Synthesized RAN congestion alert impacting sector 12A",
+      "type": "structured",
+      "category": "alert"
+    },
+    {
+      "id": "runbook_rf_002",
+      "path": "runbook_rf_002.md",
+      "description": "RF congestion mitigation checklist",
+      "type": "unstructured",
+      "category": "runbook"
+    },
+    {
+      "id": "incident_core_011",
+      "path": "incident_core_011.json",
+      "description": "Historical incident with similar KPIs",
+      "type": "structured",
+      "category": "historical_incident"
+    },
+    {
+      "id": "topology_view_05",
+      "path": "topology_snapshot.json",
+      "description": "Sector 12A topology view",
+      "type": "structured",
+      "category": "topology"
+    },
+    {
+      "id": "kpi_rollup_may",
+      "path": "kpi_metrics.json",
+      "description": "KPI metrics for the impacted cluster",
+      "type": "structured",
+      "category": "kpi"
+    },
+    {
+      "id": "network_logs_ran12a",
+      "path": "network_logs_ran12a.log",
+      "description": "Real-time network element logs from sector 12A",
+      "type": "unstructured",
+      "category": "logs"
+    },
+    {
+      "id": "kpi_timeseries_may2024",
+      "path": "kpi_timeseries_may2024.csv",
+      "description": "Time series KPI data showing performance degradation",
+      "type": "structured",
+      "category": "kpi_timeseries"
+    },
+    {
+      "id": "enodeb_config_12a",
+      "path": "enodeb_config_12a.cfg",
+      "description": "Network element configuration for eNodeB 12A",
+      "type": "semi_structured",
+      "category": "configuration"
+    },
+    {
+      "id": "network_design_east_cluster",
+      "path": "network_design_east_cluster.md",
+      "description": "Technical design document for East Cluster architecture",
+      "type": "unstructured",
+      "category": "design_document"
+    },
+    {
+      "id": "incident_postmortem_2024_03",
+      "path": "incident_postmortem_2024_03.md",
+      "description": "Postmortem analysis of similar transport congestion incident",
+      "type": "unstructured",
+      "category": "historical_incident"
+    },
+    {
+      "id": "alarm_correlation_data",
+      "path": "alarm_correlation_data.xml",
+      "description": "Correlated alarm sequence showing fault propagation",
+      "type": "structured",
+      "category": "alarms"
+    }
+  ]
+}

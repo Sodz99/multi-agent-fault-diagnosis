@@ -1,0 +1,13 @@
+{
+  "alert_id": "FD-ALRT-017",
+  "severity": "Critical",
+  "title": "Packet loss spike on sector 12A",
+  "detected_at": "2024-05-18T14:58:00Z",
+  "impacted_assets": ["RAN-SITE-12A", "MME-CLSTR-3"],
+  "kpis": {
+    "packet_loss": 0.18,
+    "latency_p95_ms": 180,
+    "throughput_drop_pct": 32
+  },
+  "summary": "Automated monitoring detected sustained RAN congestion causing subscriber impact across cluster east-3."
+}

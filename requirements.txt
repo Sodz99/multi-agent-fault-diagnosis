@@ -1,0 +1,29 @@
+# Core AI/ML Framework Dependencies for MVP
+crewai>=0.186.1              # CrewAI for multi-agent workflows
+langgraph>=0.2.55            # LangGraph for workflow orchestration
+langchain>=0.3.0             # LangChain core
+langchain-aws>=0.2.0         # AWS integrations
+litellm>=1.55.0              # LLM abstraction used by CrewAI
+
+# AWS Services (Basic)
+boto3>=1.35.0                # AWS SDK for Bedrock
+botocore>=1.35.0             # Core AWS functionality
+
+# Vector Database
+chromadb>=0.5.15             # ChromaDB for vector storage
+
+# Basic Data Processing
+numpy>=1.24.0                # Basic numerical operations
+pydantic>=2.9.0              # Data validation
+python-dotenv>=1.0.1         # Environment variables
+tiktoken>=0.8.0              # Token counting
+
+# Testing (Basic)
+pytest>=8.0.0                # Testing framework
+
+# MVP Notes:
+# - Uses AWS Bedrock with Claude 3.5 models and Titan V1 embeddings
+# - Simple sequential workflow execution
+# - Basic vector search with ChromaDB
+# - Removed production features: monitoring, advanced tools, visualization
+# - Focused on core fault diagnosis functionality only

@@ -1,0 +1,16 @@
+{
+  "sector": "12A",
+  "neighboring_sectors": ["12B", "11C", "13A"],
+  "backhaul": {
+    "type": "fiber",
+    "status": "nominal"
+  },
+  "dependencies": ["MME-CLSTR-3", "SGW-CORE-2"],
+  "open_changes": [
+    {
+      "id": "CHG-5567",
+      "description": "Scheduled carrier software update",
+      "window": "2024-05-19T01:00:00Z/2024-05-19T03:00:00Z"
+    }
+  ]
+}

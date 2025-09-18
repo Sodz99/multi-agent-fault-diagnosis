@@ -1,0 +1,15 @@
+{
+  "incident_id": "INC-CORE-011",
+  "occurred_at": "2024-02-07T03:14:00Z",
+  "impact": "Core congestion triggered by misconfigured QoS policy",
+  "resolution_time_minutes": 42,
+  "validated_signals": [
+    "packet_loss_spike",
+    "latency_p95_over_150ms",
+    "qos_profile_mismatch"
+  ],
+  "remediation": [
+    "Applied corrected QoS policy to affected MME",
+    "Restarted session manager to flush stale contexts"
+  ]
+}

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AlarmCorrelation xmlns="http://schemas.telecom.org/fault-management">
+  <AlarmSequence sequence_id="ALM-SEQ-2024-05-18-001" start_time="2024-05-18T14:55:00Z">
+
+    <Alarm id="ALM-001" timestamp="2024-05-18T14:55:12Z">
+      <Source>RAN-SITE-12A</Source>
+      <Severity>Minor</Severity>
+      <Type>PRACH_LOAD_HIGH</Type>
+      <Description>PRACH load exceeding 75% threshold</Description>
+      <Parameters>
+        <Parameter name="current_load">78.2</Parameter>
+        <Parameter name="threshold">75.0</Parameter>
+        <Parameter name="cell_id">501234012</Parameter>
+      </Parameters>
+    </Alarm>
+
+    <Alarm id="ALM-002" timestamp="2024-05-18T14:56:23Z">
+      <Source>TRANSPORT-E3-001</Source>
+      <Severity>Major</Severity>
+      <Type>LINK_CONGESTION</Type>
+      <Description>Transport link utilization critical</Description>
+      <Parameters>
+        <Parameter name="utilization_pct">94.7</Parameter>
+        <Parameter name="bandwidth_gbps">1.0</Parameter>
+        <Parameter name="affected_sites">RAN-SITE-12A,RAN-SITE-12B</Parameter>
+      </Parameters>
+    </Alarm>
+
+    <Alarm id="ALM-003" timestamp="2024-05-18T14:56:45Z">
+      <Source>MME-CLSTR-3</Source>
+      <Severity>Major</Severity>
+      <Type>S1AP_TIMEOUT</Type>
+      <Description>S1-AP connection timeout for eNodeB</Description>
+      <Parameters>
+        <Parameter name="enodeb_id">12A</Parameter>
+        <Parameter name="timeout_count">5</Parameter>
+        <Parameter name="last_response_time">45000ms</Parameter>
+      </Parameters>
+    </Alarm>
+
+    <Alarm id="ALM-004" timestamp="2024-05-18T14:57:12Z">
+      <Source>RAN-SITE-12A</Source>
+      <Severity>Critical</Severity>
+      <Type>RACH_COLLISION_RATE_HIGH</Type>
+      <Description>RACH preamble collision exceeding threshold</Description>
+      <Parameters>
+        <Parameter name="collision_rate_pct">15.7</Parameter>
+        <Parameter name="threshold_pct">10.0</Parameter>
+        <Parameter name="affected_preambles">23,24,25,26</Parameter>
+      </Parameters>
+    </Alarm>
+
+    <Alarm id="ALM-005" timestamp="2024-05-18T14:57:34Z">
+      <Source>MME-CLSTR-3</Source>
+      <Severity>Major</Severity>
+      <Type>UE_CONTEXT_RELEASE</Type>
+      <Description>Bulk UE context releases due to transport failure</Description>
+      <Parameters>
+        <Parameter name="release_count">47</Parameter>
+        <Parameter name="cause">TRANSPORT_RESOURCE_UNAVAILABLE</Parameter>
+        <Parameter name="affected_enodeb">12A</Parameter>
+      </Parameters>
+    </Alarm>
+
+    <Alarm id="ALM-006" timestamp="2024-05-18T14:57:56Z">
+      <Source>RAN-SITE-12A</Source>
+      <Severity>Critical</Severity>
+      <Type>PACKET_BUFFER_OVERFLOW</Type>
+      <Description>Packet buffer overflow causing packet drops</Description>
+      <Parameters>
+        <Parameter name="buffer_utilization_pct">98.3</Parameter>
+        <Parameter name="packets_dropped">1247</Parameter>
+        <Parameter name="buffer_size_mb">256</Parameter>
+      </Parameters>
+    </Alarm>
+
+    <Alarm id="ALM-007" timestamp="2024-05-18T14:58:18Z">
+      <Source>TRANSPORT-E3-001</Source>
+      <Severity>Critical</Severity>
+      <Type>ETHERNET_PORT_CONGESTION</Type>
+      <Description>Ethernet port utilization critical level</Description>
+      <Parameters>
+        <Parameter name="port_utilization_pct">97.1</Parameter>
+        <Parameter name="port_speed_mbps">1000</Parameter>
+        <Parameter name="congestion_control">ACTIVE</Parameter>
+      </Parameters>
+    </Alarm>
+
+    <Alarm id="ALM-008" timestamp="2024-05-18T14:58:40Z">
+      <Source>RAN-SITE-12A</Source>
+      <Severity>Critical</Severity>
+      <Type>CALL_DROP_RATE_HIGH</Type>
+      <Description>Call drop rate exceeding critical threshold</Description>
+      <Parameters>
+        <Parameter name="current_rate_pct">12.3</Parameter>
+        <Parameter name="threshold_pct">2.0</Parameter>
+        <Parameter name="dropped_calls_count">89</Parameter>
+        <Parameter name="measurement_period_min">5</Parameter>
+      </Parameters>
+    </Alarm>
+
+  </AlarmSequence>
+
+  <CorrelationRules>
+    <Rule id="RULE-001">
+      <Name>Transport Congestion Pattern</Name>
+      <Condition>
+        <AlarmType>LINK_CONGESTION</AlarmType>
+        <FollowedBy within_minutes="2">
+          <AlarmType>S1AP_TIMEOUT</AlarmType>
+        </FollowedBy>
+      </Condition>
+      <RootCause>BACKHAUL_CAPACITY_EXHAUSTION</RootCause>
+      <Recommendation>Activate load balancing and congestion control</Recommendation>
+    </Rule>
+
+    <Rule id="RULE-002">
+      <Name>RAN Overload Cascade</Name>
+      <Condition>
+        <AlarmType>PRACH_LOAD_HIGH</AlarmType>
+        <FollowedBy within_minutes="5">
+          <AlarmType>RACH_COLLISION_RATE_HIGH</AlarmType>
+          <AlarmType>CALL_DROP_RATE_HIGH</AlarmType>
+        </FollowedBy>
+      </Condition>
+      <RootCause>CELL_CAPACITY_OVERLOAD</RootCause>
+      <Recommendation>Reduce admission control limits, initiate handover optimization</Recommendation>
+    </Rule>
+
+    <Rule id="RULE-003">
+      <Name>Buffer Overflow Symptoms</Name>
+      <Condition>
+        <AlarmType>PACKET_BUFFER_OVERFLOW</AlarmType>
+        <CausedBy>
+          <AlarmType>ETHERNET_PORT_CONGESTION</AlarmType>
+        </CausedBy>
+      </Condition>
+      <RootCause>TRANSPORT_BOTTLENECK</RootCause>
+      <Recommendation>Emergency traffic throttling, escalate transport capacity</Recommendation>
+    </Rule>
+  </CorrelationRules>
+
+</AlarmCorrelation>

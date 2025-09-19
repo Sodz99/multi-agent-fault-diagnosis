@@ -10,6 +10,10 @@ A comprehensive, production-ready implementation of a multi-agent fault diagnosi
 
 ## 🚀 Quick Start
 
+
+<script src="https://asciinema.org/a/VOGlgOddp6dyECuz8RhdCmdeU.js" id="asciicast-VOGlgOddp6dyECuz8RhdCmdeU" async="true"></script>
+
+
 ### Prerequisites
 
 - Python 3.9 or higher

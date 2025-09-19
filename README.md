@@ -14,7 +14,6 @@ An advanced AI-powered system that demonstrates cutting-edge multi-agent orchest
 
 <div align="center">
 
-### 🚀 **Complete System Demo**
 
 ![Fault Diagnosis Multi-Agent System Demo](demo.gif)
 

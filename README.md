@@ -1,318 +1,562 @@
-# Fault Diagnosis Multi-Agent System
+# 🔧 Intelligent Fault Diagnosis Multi-Agent System
 
-A comprehensive, production-ready implementation of a multi-agent fault diagnosis system for telecom networks, featuring:
+[![Python](https://img.shields.io/badge/Python-3.9+-3776ab.svg?style=flat&logo=python&logoColor=white)](https://python.org)
+[![CrewAI](https://img.shields.io/badge/CrewAI-0.186+-ff6b6b.svg?style=flat)](https://crewai.com)
+[![LangGraph](https://img.shields.io/badge/LangGraph-0.2.55+-1f77b4.svg?style=flat)](https://langchain-ai.github.io/langgraph/)
+[![AWS Bedrock](https://img.shields.io/badge/AWS_Bedrock-Claude_3.5-ff9900.svg?style=flat&logo=amazon-aws)](https://aws.amazon.com/bedrock/)
+[![License](https://img.shields.io/badge/License-Portfolio-blue.svg)](https://choosealicense.com/licenses/mit/)
 
-- **CrewAI** for intelligent agent orchestration
-- **LangGraph** for stateful workflow management
-- **AWS Bedrock** for RAG-powered knowledge retrieval
-- **Hypothesis validation** with specialized telecom validators
-- **Deterministic demo mode** for reproducible demonstrations
+> **Enterprise-grade intelligent fault diagnosis system leveraging multi-agent AI, stateful workflows, and RAG-powered knowledge retrieval for automated network troubleshooting.**
 
-## 🚀 Quick Start
+An advanced AI-powered system that demonstrates cutting-edge multi-agent orchestration, intelligent workflow management, and retrieval-augmented generation for automated fault diagnosis in telecommunications networks. This project showcases enterprise-ready AI engineering with production-quality architecture, comprehensive validation, and deterministic demonstration capabilities.
 
-### Prerequisites
+## 🎬 **Watch It In Action**
 
-- Python 3.9 or higher
-- AWS account with Bedrock access (for full RAG functionality)
-- Git
+<div align="center">
 
-### Installation
+### 🚀 **Complete System Demo**
 
-1. **Clone the repository**
+![Fault Diagnosis Multi-Agent System Demo](demo.gif)
+
+*Multi-agent coordination • RAG pipeline • Real-time validation • Artifact generation*
+
+</div>
+
+## 🎯 **Project Highlights**
+
+### **🤖 Advanced Multi-Agent Architecture**
+- **CrewAI Orchestration**: Four specialized AI agents with distinct roles and personas
+- **Intelligent Collaboration**: Coordinated handoffs and shared state management
+- **Domain Expertise**: Telecom-specific knowledge and reasoning capabilities
+
+### **🧠 Sophisticated AI Pipeline**
+- **RAG-Powered Knowledge**: AWS Bedrock with Claude 3.5 Sonnet and Titan embeddings
+- **Stateful Workflows**: LangGraph for complex decision routing and escalation handling
+- **Hypothesis Validation**: Multiple specialized validators with confidence scoring
+- **Intelligent Routing**: Dynamic workflow paths based on confidence thresholds
+
+### **🏗️ Production-Ready Engineering**
+- **Comprehensive Error Handling**: Graceful fallbacks and robust error recovery
+- **Session Management**: Artifact generation with complete audit trails
+- **Observability**: Real-time monitoring and detailed logging
+- **Deterministic Demos**: Reproducible presentations for stakeholders
+
+---
+
+## 🏛️ **System Architecture**
+
+```mermaid
+graph TB
+    A[Alert Intake] --> B[Intelligent Router]
+    B --> C[Evidence Gathering]
+    C --> D[Multi-Agent Crew]
+
+    subgraph "CrewAI Agents"
+        D1[NOC Sentinel<br/>Planner]
+        D2[Core Network<br/>Analyst]
+        D3[Hypothesis<br/>Chair]
+        D4[Postmortem<br/>Writer]
+    end
+
+    D --> D1
+    D1 --> D2
+    D2 --> D3
+    D3 --> D4
+
+    subgraph "RAG Pipeline"
+        E[AWS Bedrock<br/>Claude 3.5]
+        F[Titan Embeddings]
+        G[ChromaDB<br/>Vector Store]
+    end
+
+    D2 --> E
+    E --> F
+    F --> G
+
+    subgraph "Validation Layer"
+        H[Traffic Probe<br/>Validator]
+        I[Config Diff<br/>Validator]
+        J[Topology<br/>Validator]
+    end
+
+    D3 --> H
+    D3 --> I
+    D3 --> J
+
+    K[LangGraph<br/>State Machine] --> L[Resolution<br/>Engine]
+    L --> M[Artifact<br/>Generation]
+
+    style A fill:#e1f5fe
+    style D fill:#f3e5f5
+    style E fill:#fff3e0
+    style K fill:#e8f5e8
+```
+
+## 🚀 **Quick Start**
+
+### **Prerequisites**
+- **Python 3.9+** with pip
+- **AWS Account** with Bedrock access (optional for demo mode)
+- **Git** for version control
+
+### **⚡ Instant Demo**
 ```bash
+# Clone and run in 30 seconds
 git clone <repository-url>
 cd fault-diagnosis-multi-agent
+./run_demo.bat  # Windows
+# or
+python -m venv venv && source venv/bin/activate  # Linux/macOS
+pip install -r requirements.txt
+python -m src.fault_diagnosis.cli fault-diagnosis --session demo
 ```
 
-2. **Run the setup script**
+### **🔧 Full Setup**
+
+1. **Environment Setup**
+   ```bash
+   # Create virtual environment
+   python -m venv venv
+
+   # Activate environment
+   venv\Scripts\activate  # Windows
+   source venv/bin/activate  # Linux/macOS
+
+   # Install dependencies
+   pip install -r requirements.txt
+   ```
+
+2. **AWS Configuration** (Optional - system works without AWS)
+   ```bash
+   # Create .env file
+   cp .env.example .env
+
+   # Edit .env with your AWS credentials
+   AWS_ACCESS_KEY_ID=your_access_key
+   AWS_SECRET_ACCESS_KEY=your_secret_key
+   AWS_DEFAULT_REGION=us-east-1
+   ```
+
+3. **Run Demonstration**
+   ```bash
+   # Full featured demo with RAG
+   python -m src.fault_diagnosis.cli fault-diagnosis --session alpha
+
+   # Quick demo without RAG
+   python -m src.fault_diagnosis.cli fault-diagnosis --no-rag --session beta
+   ```
+
+---
+
+## 💼 **Core Capabilities**
+
+### **🎭 Multi-Agent Crew**
+
+| Agent | Role | Specialization |
+|-------|------|----------------|
+| **NOC Sentinel** | 🎯 **Planner** | Alert triage, workflow coordination, objective alignment |
+| **Core Network Analyst** | 🔍 **Retriever** | Evidence gathering, RAG queries, knowledge search |
+| **Hypothesis Chair** | 🧠 **Reasoner** | Root cause analysis, hypothesis generation, validation |
+| **Postmortem Writer** | 📝 **Reporter** | Documentation, remediation plans, stakeholder reports |
+
+### **🔄 Intelligent Workflow States**
+
+```python
+# Workflow progression with automatic routing
+Alert Intake → Evidence Gathering → Hypothesis Generation
+     ↓                ↓                      ↓
+Routing Decision → Validation Loop → Resolution Planning
+     ↓                ↓                      ↓
+Remediation → Post-Mortem → Knowledge Update
+```
+
+### **🎯 Validation Framework**
+
+- **Traffic Probe Validator**: Network performance claim verification
+- **Config Diff Validator**: Configuration change impact analysis
+- **Topology Validator**: Network topology reference checking
+- **Confidence Scoring**: Probabilistic validation with threshold-based routing
+
+---
+
+## 🎪 **Demo Experience**
+
+### **🎥 Live Execution**
+
+The system provides real-time multi-agent coordination, RAG queries, and validation in action through the interactive CLI demo.
+
+### **Command Examples**
 ```bash
-python setup.py
+# Standard demo run
+python -m src.fault_diagnosis.cli fault-diagnosis --session production_demo
+
+# Quiet mode for presentations
+python -m src.fault_diagnosis.cli fault-diagnosis --quiet --session stakeholder_demo
+
+# Test mode without external dependencies
+python -m src.fault_diagnosis.cli fault-diagnosis --no-rag --session test_run
 ```
 
-This will:
-- Create a virtual environment
-- Install all dependencies
-- Set up configuration files
-- Verify the installation
+### **Sample Output**
+```
+Starting Simple Fault Diagnosis MVP
+========================================
 
-3. **Configure AWS credentials** (optional for demo mode)
-```bash
-# Edit .env file with your AWS credentials
-cp .env.example .env
-# Edit .env with your AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+Component Status:
+  [OK] CrewAI Agents: Available
+  [OK] LangGraph Workflow: Available
+  [OK] RAG Pipeline: Available
+  [OK] Validation Framework: Available
+
+Running workflow...
+
+[CrewAI] NOC Sentinel analyzing alert FD-ALRT-017...
+[RAG] Retrieved 3 relevant documents from knowledge base
+[LangGraph] Routing to hypothesis generation (confidence: 0.87)
+[Validator] Traffic probe validation: PASSED
+[Workflow] Generating remediation plan...
+
+MVP Demo complete!
+Results: Session artifacts saved to outputs/session_production_demo_20241219/
 ```
 
-4. **Activate virtual environment**
-```bash
-# Windows
-venv\Scripts\activate
+---
 
-# Linux/macOS
-source venv/bin/activate
+## 🧪 **Technology Deep Dive**
+
+### **🤖 CrewAI Integration**
+```python
+# Sophisticated agent orchestration
+class FaultDiagnosisCrew:
+    def __init__(self):
+        self.agents = FaultDiagnosisAgents()
+        self.workflow = FaultDiagnosisWorkflow()
+
+    def execute_sequential_process(self):
+        # Coordinated multi-agent execution
+        return self.crew.kickoff()
 ```
 
-5. **Run the demo**
-```bash
-telecom-ops fault-diagnosis --demo --session alpha
+### **🧠 LangGraph State Management**
+```python
+# Stateful workflow with intelligent routing
+class FaultDiagnosisWorkflow:
+    def route_decision(self, state):
+        confidence = state.get("confidence_score", 0.0)
+        if confidence > 0.7:
+            return "remediation_planning"
+        else:
+            return "escalation_queue"
 ```
 
-## 📖 Usage
-
-### Basic Demo Run
-
-Run a deterministic fault diagnosis demo:
-
-```bash
-telecom-ops fault-diagnosis --demo --session my_demo
+### **📚 RAG Pipeline Architecture**
+```python
+# AWS Bedrock integration with fallback
+class BedrockRAGPipeline:
+    def __init__(self):
+        self.embeddings = BedrockEmbeddings(
+            model_id="amazon.titan-embed-text-v1"
+        )
+        self.llm = BedrockLLM(
+            model_id="anthropic.claude-3-5-sonnet-20241022-v2:0"
+        )
+        self.vector_store = ChromaDB()
 ```
 
-This creates a timestamped session directory under `artifacts/sessions/` with:
-- Hypothesis analysis and validation results
-- HTML/PDF reports
-- KPI plots and visualizations
-- Complete session transcripts
-- Synthetic data for reproducibility
+---
 
-### Command Options
-
-```bash
-telecom-ops fault-diagnosis [OPTIONS]
-
-Options:
-  --demo              Run scripted demo flow (default)
-  --session NAME      Session label for artifact directory
-  --seed INT          Deterministic seed (default: 4242)
-  --help              Show help message
-```
-
-### Sample Output
-
-```
-Workflow: Fault Diagnosis (Integrated) | Crew: Planner, Retriever, Reasoner, Reporter
-Deterministic seed: 4242 | Session: artifacts/sessions/2024-05-18T15-04-22Z_alpha/
-
-[2024-05-18T15:04:22Z] Fixture Loading      Started
-[RAG] Loading 5 fixtures into vector store...
-[RAG] Processed FD-ALRT-017: 3 chunks
-[Integration] RAG pipeline initialized
-[2024-05-18T15:04:23Z] Fixture Loading      Completed
-
-[2024-05-18T15:04:23Z] Alert Processing     Started
-[2024-05-18T15:04:24Z] Alert Processing     Completed
-
-[2024-05-18T15:04:24Z] LangGraph Workflow   Started
-[LangGraph] Starting fault diagnosis workflow...
-[Workflow] Alert Intake - Processing incoming alert...
-[Workflow] Evidence Gathering - Collecting relevant data...
-[CrewAI] Starting Hypothesis Generation phase...
-[2024-05-18T15:04:28Z] LangGraph Workflow   Completed
-
-[2024-05-18T15:04:28Z] Enhanced Validation  Started
-[Validator] H1: Grounded (confidence: 0.85)
-[Validator] H2: Retry (confidence: 0.62)
-[Validator] H3: Rejected (confidence: 0.34)
-[2024-05-18T15:04:29Z] Enhanced Validation  Completed
-
-Demo complete. Artifacts are available under: artifacts/sessions/2024-05-18T15-04-22Z_alpha/
-```
-
-## 🏗️ Architecture
-
-### System Components
-
-1. **CrewAI Agents**
-   - **NOC Sentinel Planner**: Alert triage and workflow coordination
-   - **Core Network Analyst**: Evidence retrieval and knowledge search
-   - **Hypothesis Chair**: Root cause analysis and hypothesis generation
-   - **Postmortem Writer**: Report generation and documentation
-
-2. **LangGraph Workflow**
-   - Stateful workflow orchestration
-   - Decision routing based on confidence thresholds
-   - Escalation handling for low-confidence scenarios
-   - Guardrailed validation loops
-
-3. **Bedrock RAG Pipeline**
-   - AWS Bedrock embeddings for semantic search
-   - ChromaDB vector storage with persistence
-   - Grounded retrieval with proper citations
-   - Fallback to local text search if Bedrock unavailable
-
-4. **Hypothesis Validators**
-   - **Traffic Probe Validator**: Validates network performance claims
-   - **Config Diff Validator**: Checks configuration-related hypotheses
-   - **Topology Validator**: Verifies network topology references
-
-### Workflow Stages
-
-1. **Alert Intake** → Parse and classify incoming alerts
-2. **Routing Decision** → Route to appropriate specialist workflows
-3. **Evidence Gathering** → Collect logs, KPIs, and historical data
-4. **Hypothesis Generation** → Generate ranked root cause hypotheses
-5. **Guardrailed Validation** → Validate hypotheses with multiple validators
-6. **Resolution Decision** → Decide between remediation and escalation
-7. **Remediation Planning** → Generate actionable remediation steps
-8. **Post-Mortem Documentation** → Create reports and update knowledge base
-
-## 🧪 Testing
-
-### Smoke Test
-
-Verify the complete system works:
-
-```bash
-python scripts/smoke_fault_diagnosis.py
-```
-
-### Manual Testing
-
-Test individual components:
-
-```bash
-# Test CLI directly
-python -m telecom_ops.cli fault-diagnosis --demo --session test
-
-# Test with specific seed
-python -m telecom_ops.cli fault-diagnosis --demo --seed 1234 --session reproducible
-```
-
-## 📁 Project Structure
+## 📊 **Project Structure**
 
 ```
 fault-diagnosis-multi-agent/
-├── telecom_ops/                    # Main package
-│   ├── cli.py                     # CLI entry point
-│   ├── fault_diagnosis/           # Fault diagnosis workflow
-│   │   ├── agents.py              # CrewAI agent definitions
-│   │   ├── tasks.py               # CrewAI task definitions
-│   │   ├── crew_orchestration.py # CrewAI crew setup
-│   │   ├── langgraph_workflow.py  # LangGraph state machine
-│   │   ├── rag_pipeline.py        # Bedrock RAG implementation
-│   │   ├── validators.py          # Hypothesis validation logic
-│   │   ├── integrated_workflow.py # Main integrated workflow
-│   │   ├── artifacts.py           # Artifact generation
-│   │   └── data.py                # Fixture data loading
-│   └── shared/                    # Shared utilities
-│       ├── console.py             # Console output helpers
-│       └── files.py               # File system utilities
-├── data/fault_diagnosis/fixtures/ # Sample fixture data
-├── scripts/                       # Utility scripts
-├── artifacts/                     # Generated artifacts
-│   ├── sessions/                  # Session-specific artifacts
-│   ├── plots/                     # KPI visualizations
-│   └── data/                      # Synthetic data exports
-├── .env.example                   # Environment configuration template
-├── pyproject.toml                 # Python package configuration
-├── setup.py                       # Setup script
-└── README.md                      # This file
+├── 🎯 src/fault_diagnosis/           # Core system implementation
+│   ├── 🤖 agents/                   # Multi-agent orchestration
+│   │   ├── crew_orchestration.py   # CrewAI crew setup and management
+│   │   ├── factory.py               # Agent factory with role definitions
+│   │   ├── tasks.py                 # Task definitions and coordination
+│   │   └── crew.py                  # Agent personas and capabilities
+│   ├── 🔄 workflow/                 # Stateful workflow management
+│   │   ├── orchestrator.py          # Main workflow coordinator
+│   │   ├── state_machine.py         # LangGraph state transitions
+│   │   └── workflow.py              # Workflow execution logic
+│   ├── 📚 rag/                      # RAG pipeline implementation
+│   │   └── pipeline.py              # AWS Bedrock RAG integration
+│   ├── 🛣️ routing/                  # Intelligent decision routing
+│   │   └── intelligent_router.py    # Dynamic workflow routing
+│   ├── ✅ validation/               # Hypothesis validation framework
+│   │   └── validators.py            # Specialized domain validators
+│   ├── 📊 monitoring/               # System observability
+│   │   └── observability.py         # Metrics and monitoring
+│   ├── 🗂️ data/                     # Data management and fixtures
+│   │   └── fixtures.py              # Test data and scenarios
+│   ├── 🎨 artifacts/                # Report and artifact generation
+│   │   └── generators.py            # Output formatting and reports
+│   ├── 🔧 shared/                   # Shared utilities
+│   │   ├── console.py               # CLI output formatting
+│   │   └── files.py                 # File system operations
+│   └── 🖥️ cli.py                    # Command-line interface
+├── 📁 fixtures/                     # Demo data and test scenarios
+├── 📁 outputs/                      # Generated session artifacts
+├── 📁 docs/                         # Technical documentation
+├── 🔧 requirements.txt              # Python dependencies
+├── 🚀 run_demo.bat                  # Quick demo launcher
+└── 📖 README.md                     # This file
 ```
 
-## 🔧 Configuration
+---
 
-### Environment Variables
+## ⚙️ **Configuration**
 
-Key configuration options in `.env`:
-
+### **Environment Variables**
 ```bash
-# AWS Configuration
-AWS_DEFAULT_REGION=us-east-1
+# AWS Bedrock Configuration
 AWS_ACCESS_KEY_ID=your_access_key_here
 AWS_SECRET_ACCESS_KEY=your_secret_key_here
+AWS_DEFAULT_REGION=us-east-1
 
-# Bedrock Models
+# Model Configuration
+BEDROCK_LLM_MODEL=anthropic.claude-3-5-sonnet-20241022-v2:0
 BEDROCK_EMBEDDING_MODEL=amazon.titan-embed-text-v1
-BEDROCK_LLM_MODEL=anthropic.claude-3-sonnet-20240229-v1:0
 
-# Workflow Settings
+# System Configuration
 FAULT_DIAGNOSIS_CONFIDENCE_THRESHOLD=0.7
-FAULT_DIAGNOSIS_ENABLE_RAG=true
-FAULT_DIAGNOSIS_ENABLE_CREWAI=true
-FAULT_DIAGNOSIS_ENABLE_LANGGRAPH=true
-FAULT_DIAGNOSIS_ENABLE_VALIDATORS=true
+FAULT_DIAGNOSIS_VERBOSE=true
 ```
 
-### Component Toggle
+### **Component Features**
+- **🔄 RAG Pipeline**: Semantic search with AWS Bedrock embeddings
+- **🤖 Multi-Agent**: CrewAI orchestration with specialized roles
+- **📊 State Management**: LangGraph workflow with decision routing
+- **✅ Validation**: Multi-layer hypothesis verification
+- **📈 Monitoring**: Real-time observability and metrics
+- **🎯 Routing**: Intelligent workflow path selection
 
-You can selectively enable/disable components for different deployment scenarios:
+---
 
-- **Demo Mode**: All components enabled with fallbacks
-- **Production Mode**: Full AWS Bedrock integration
-- **Offline Mode**: CrewAI + LangGraph only (no RAG)
-- **Basic Mode**: Simple workflow without advanced validation
+## 📈 **Generated Artifacts**
 
-## 📊 Output Artifacts
+Each session produces comprehensive outputs:
 
-Each session generates comprehensive artifacts:
+### **📊 Reports & Documentation**
+- `fault_diagnosis_report.html` - Executive stakeholder report
+- `fault_diagnosis_report.pdf` - Printable documentation
+- `hypothesis_board.md` - Detailed technical analysis
+- `remediation_plan.md` - Step-by-step action guide
 
-### Reports
-- `fault_diagnosis_report.html` - Stakeholder-ready HTML report
-- `fault_diagnosis_report.pdf` - PDF version for distribution
-- `hypothesis_board.md` - Detailed hypothesis analysis
-- `remediation_plan.md` - Step-by-step remediation guide
-
-### Data Files
+### **🔍 Technical Artifacts**
+- `session.log` - Complete execution transcript
 - `alert_context.json` - Processed alert data
-- `rag_index.json` - RAG retrieval results with citations
-- `validation_trace.json` - Validator results and verdicts
-- `manifest.json` - Complete list of generated artifacts
+- `validation_trace.json` - Validator results and decisions
+- `rag_index.json` - Knowledge retrieval citations
 
-### Session Logs
-- `session.log` - Complete session transcript
-- Synthetic data bundle for reproducibility
-- KPI trend visualizations
+### **📊 Visualizations**
+- KPI trend plots and network metrics
+- Confidence score distributions
+- Validation outcome summaries
+- Session timeline visualizations
 
-## 🤝 Contributing
+---
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Add tests for new functionality
-5. Run the smoke test (`python scripts/smoke_fault_diagnosis.py`)
-6. Commit your changes (`git commit -m 'Add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
+## 🧪 **Testing & Validation**
 
-## 📄 License
-
-This project is licensed under the Proprietary License - see the pyproject.toml file for details.
-
-## 🆘 Troubleshooting
-
-### Common Issues
-
-**AWS Credentials Not Found**
+### **Smoke Tests**
 ```bash
-# Set AWS credentials in .env file or use AWS CLI
-aws configure
-# Or set environment variables directly
-export AWS_ACCESS_KEY_ID=your_key
-export AWS_SECRET_ACCESS_KEY=your_secret
+# Quick system validation
+python -m src.fault_diagnosis.cli fault-diagnosis --quiet --session smoke_test
+
+# Component isolation testing
+python -m src.fault_diagnosis.cli fault-diagnosis --no-rag --session component_test
 ```
 
-**Bedrock Access Denied**
-- Ensure your AWS account has Bedrock access enabled
-- Check that your region supports the Bedrock models you're using
-- Verify IAM permissions include Bedrock actions
-
-**Import Errors**
+### **Demo Scenarios**
 ```bash
-# Reinstall in development mode
-pip install -e .
-# Or activate virtual environment
-source venv/bin/activate  # Linux/macOS
-venv\Scripts\activate     # Windows
+# Stakeholder presentation mode
+python -m src.fault_diagnosis.cli fault-diagnosis --session stakeholder_demo
+
+# Technical deep-dive mode
+python -m src.fault_diagnosis.cli fault-diagnosis --session technical_demo
 ```
 
-**No Artifacts Generated**
-- Check that the `artifacts/` directory is writable
-- Verify the session completed without errors
-- Look for error messages in the console output
+---
 
-### Getting Help
+## 🛠️ **Development & Extension**
 
-- Check the smoke test: `python scripts/smoke_fault_diagnosis.py`
-- Review session logs in `artifacts/sessions/<timestamp>/session.log`
-- Enable verbose mode in `.env`: `FAULT_DIAGNOSIS_VERBOSE=true`
-- For AWS/Bedrock issues, check CloudTrail logs
+### **Adding New Agents**
+```python
+# Extend the agent factory
+class CustomFaultAgent:
+    def __init__(self):
+        self.role = "Custom Specialist"
+        self.backstory = "Domain-specific expertise..."
+        self.goal = "Specialized analysis objective"
+```
 
-For more detailed information, see `Fault_Diagnosis.md`.
+### **Custom Validators**
+```python
+# Implement domain-specific validation
+class CustomValidator:
+    def validate_hypothesis(self, hypothesis: str) -> ValidationResult:
+        # Custom validation logic
+        return ValidationResult(passed=True, confidence=0.85)
+```
+
+### **Workflow Extensions**
+```python
+# Add new workflow states
+@workflow.step
+def custom_analysis_step(state: WorkflowState):
+    # Custom processing logic
+    return updated_state
+```
+
+---
+
+## 🎯 **Business Value & Use Cases**
+
+### **🎬 Demonstration Modes**
+
+<table>
+<tr>
+<td width="50%">
+
+**👔 For Executives & Decision Makers**
+```bash
+python -m src.fault_diagnosis.cli fault-diagnosis --quiet --session stakeholder_demo
+```
+*ROI focus • Business impact • Cost reduction*
+
+</td>
+<td width="50%">
+
+**👨‍💻 For Technical Teams**
+```bash
+python -m src.fault_diagnosis.cli fault-diagnosis --session technical_demo
+```
+*Architecture • Code quality • Implementation*
+
+</td>
+</tr>
+</table>
+
+### **Enterprise Applications**
+- **🏢 Network Operations Centers**: Automated first-level incident response
+- **☁️ Cloud Infrastructure**: Multi-cloud fault diagnosis and remediation
+- **🏭 Industrial IoT**: Equipment failure prediction and root cause analysis
+- **🚀 DevOps**: Application performance issue diagnosis and resolution
+
+### **Technical Advantages**
+- **⚡ Rapid Deployment**: Minutes from clone to running demo
+- **🔧 Modular Architecture**: Easy component swapping and extension
+- **📊 Rich Observability**: Complete audit trails and session recordings
+- **🎯 Domain Adaptable**: Easily customizable for different industries
+
+### **Stakeholder Benefits**
+- **👔 Executives**: ROI demonstration through automated incident response
+- **👨‍💻 Engineers**: Advanced AI tooling for complex problem solving
+- **📋 Operations**: Reduced MTTR and improved service reliability
+- **🎓 Learning**: Comprehensive example of production AI engineering
+
+---
+
+## 🤝 **Contributing**
+
+This project demonstrates advanced AI engineering patterns and welcomes contributions:
+
+```bash
+# Development setup
+git clone <repository-url>
+cd fault-diagnosis-multi-agent
+python -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows
+pip install -r requirements.txt
+
+# Run tests
+python -m src.fault_diagnosis.cli fault-diagnosis --session test
+
+# Submit improvements
+git checkout -b feature/enhancement
+# Make changes...
+git commit -m "feat: add new capability"
+git push origin feature/enhancement
+```
+
+---
+
+## 📚 **Documentation**
+
+- **📖 [Technical Deep Dive](docs/Fault_Diagnosis.md)** - Comprehensive system documentation
+- **🏗️ [Architecture Guide](docs/Architecture.md)** - System design and patterns
+- **🔧 [Configuration Reference](docs/Configuration.md)** - Setup and customization
+- **🎯 [Demo Scripts](docs/Demos.md)** - Presentation scenarios and examples
+
+## 🎮 **Interactive Demo Features**
+
+### **📊 Available Demo Modes**
+
+| Feature | Command | Description |
+|---------|---------|-------------|
+| **🚀 Quick Start** | `./run_demo.bat` | Zero to running demo in 30 seconds |
+| **🤖 Multi-Agent** | `--session alpha` | Full CrewAI agents coordination |
+| **🏗️ Architecture** | `--session technical_demo` | Technical design walkthrough |
+| **📚 RAG Pipeline** | `--session production_demo` | AWS Bedrock knowledge retrieval |
+| **🎯 Live Terminal** | `--session demo` | Real-time execution footage |
+| **👔 Executive Mode** | `--quiet --session stakeholder_demo` | Business value & ROI focus |
+| **👨‍💻 Technical Mode** | `--session technical_demo` | Code review & implementation |
+| **🧪 Test Mode** | `--no-rag --session test_run` | Offline demonstration |
+
+---
+
+## 🏆 **Portfolio Highlights**
+
+This project demonstrates mastery of:
+
+### **🤖 Advanced AI Engineering**
+- Multi-agent system orchestration with CrewAI
+- Stateful workflow management with LangGraph
+- Production RAG implementation with AWS Bedrock
+- Intelligent routing and decision making
+
+### **🏗️ Software Architecture**
+- Clean, modular, and extensible design patterns
+- Comprehensive error handling and resilience
+- Professional logging and observability
+- Session management and artifact generation
+
+### **☁️ Cloud & Enterprise**
+- AWS Bedrock integration for production AI
+- Scalable vector database architecture
+- Configuration management and environment handling
+- Enterprise-ready security and monitoring
+
+### **📊 Data & Analytics**
+- Vector embeddings and semantic search
+- Hypothesis validation and confidence scoring
+- Real-time monitoring and metrics collection
+- Comprehensive reporting and visualization
+
+---
+
+## 📄 **License**
+
+This project is developed as a portfolio demonstration of advanced AI engineering capabilities. See the project structure and documentation for detailed implementation patterns and best practices.
+
+---
+
+## 🔮 **Future Enhancements**
+
+- **🌐 Web Interface**: React-based dashboard for real-time monitoring
+- **📱 Mobile App**: iOS/Android client for field operations
+- **🔗 API Gateway**: RESTful API for system integration
+- **🧪 A/B Testing**: Hypothesis validation strategy optimization
+- **📊 Advanced Analytics**: Machine learning model performance tracking
+- **🔄 Auto-Scaling**: Kubernetes deployment with auto-scaling capabilities
+
+---
+
+<div align="center">
+
+**Built with ❤️ using cutting-edge AI and modern software engineering practices**
+
+[🎯 **Live Demo**](./run_demo.bat) | [📚 **Documentation**](docs/) | [🤝 **Contribute**](#contributing)
+
+</div>

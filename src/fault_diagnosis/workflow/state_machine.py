@@ -203,14 +203,39 @@ class FaultDiagnosisWorkflow:
             }
 
         except Exception as e:
+            error_message = str(e)
+
+            # Categorize the error for better debugging
+            if "client" in error_message.lower() and "none" in error_message.lower():
+                error_type = "Client Initialization Error"
+                suggestion = "Check AWS Bedrock configuration and credentials"
+            elif "bedrock" in error_message.lower():
+                error_type = "Bedrock Service Error"
+                suggestion = "Verify Bedrock access permissions and model availability"
+            elif "aws" in error_message.lower() or "credential" in error_message.lower():
+                error_type = "AWS Configuration Error"
+                suggestion = "Check AWS credentials and region configuration"
+            elif "timeout" in error_message.lower():
+                error_type = "Service Timeout Error"
+                suggestion = "Check network connectivity and service availability"
+            else:
+                error_type = "General Workflow Error"
+                suggestion = "Check system logs for more details"
+
             if self.config.verbose:
-                print(f"[Workflow] Hypothesis generation error: {e}")
+                print(f"[Workflow] Hypothesis generation error ({error_type}): {e}")
+                print(f"[Workflow] Suggestion: {suggestion}")
 
             # Return default hypotheses on error
             default_hypotheses = self._create_default_hypotheses()
             return {
                 "current_stage": "hypotheses_generated",
                 "hypotheses": default_hypotheses,
+                "error_info": {
+                    "error_type": error_type,
+                    "error_message": error_message,
+                    "suggestion": suggestion
+                }
             }
 
     def _validation_node(self, state: FaultDiagnosisState) -> Dict[str, Any]:

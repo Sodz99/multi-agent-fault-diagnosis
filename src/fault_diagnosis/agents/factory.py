@@ -51,13 +51,13 @@ def validate_aws_credentials() -> Dict[str, Any]:
             region_name=aws_region
         )
 
-        # Try to create Bedrock client
-        bedrock_client = session.client('bedrock-runtime')
+        # Try to create Bedrock client (use 'bedrock' not 'bedrock-runtime' for listing models)
+        bedrock_client = session.client('bedrock')
 
         # Test basic connectivity by listing models (this requires minimal permissions)
         try:
             # This is a lightweight call to test connectivity
-            bedrock_client.list_foundation_models()
+            models = bedrock_client.list_foundation_models()
             validation_result["bedrock_accessible"] = True
         except botocore.exceptions.ClientError as e:
             error_code = e.response.get('Error', {}).get('Code', 'Unknown')
@@ -83,7 +83,7 @@ def test_bedrock_model_access(model_id: str, region: str = None) -> bool:
             region = os.getenv("AWS_DEFAULT_REGION") or os.getenv("BEDROCK_REGION", "us-east-1")
 
         session = boto3.Session(region_name=region)
-        bedrock_client = session.client('bedrock-runtime')
+        bedrock_client = session.client('bedrock')
 
         # Convert LiteLLM format to pure model ID
         clean_model_id = model_id.replace("bedrock/", "")
@@ -112,11 +112,11 @@ def initialize_bedrock_for_litellm() -> bool:
         validation = validate_aws_credentials()
 
         if not validation["credentials_valid"]:
-            print(f"[Agents] ❌ AWS credentials validation failed: {validation['error_message']}")
+            print(f"[Agents] AWS credentials validation failed: {validation['error_message']}")
             return False
 
         if not validation["region_configured"]:
-            print(f"[Agents] ❌ AWS region not configured")
+            print(f"[Agents] AWS region not configured")
             return False
 
         # Set environment variables that LiteLLM expects
@@ -129,14 +129,14 @@ def initialize_bedrock_for_litellm() -> bool:
         boto3.setup_default_session(region_name=region)
 
         if validation["bedrock_accessible"]:
-            print(f"[Agents] ✅ Bedrock initialized for LiteLLM in region: {region}")
+            print(f"[Agents] Bedrock initialized for LiteLLM in region: {region}")
             return True
         else:
-            print(f"[Agents] ⚠️ Bedrock may not be accessible: {validation['error_message']}")
+            print(f"[Agents] Bedrock may not be accessible: {validation['error_message']}")
             return False
 
     except Exception as e:
-        print(f"[Agents] ❌ Failed to initialize Bedrock for LiteLLM: {e}")
+        print(f"[Agents] Failed to initialize Bedrock for LiteLLM: {e}")
         return False
 
 
@@ -166,6 +166,74 @@ def create_bedrock_llm(model_id: Optional[str] = None, agent_role: Optional[str]
     return LLM(model=model_string)
 
 
+def validate_llm_client(llm: LLM, role: str = "unknown", verbose: bool = True) -> bool:
+    """Validate that an LLM object has a properly initialized client.
+
+    Args:
+        llm: The LLM object to validate
+        role: Role name for logging purposes
+        verbose: Enable detailed logging
+
+    Returns:
+        bool: True if client is properly initialized, False otherwise
+    """
+    if llm is None:
+        if verbose:
+            print(f"[Agents] ERROR: {role} LLM is None")
+        return False
+
+    try:
+        # Check if the LLM object has the expected attributes
+        if not hasattr(llm, 'model'):
+            if verbose:
+                print(f"[Agents] ERROR: {role} LLM missing 'model' attribute")
+            return False
+
+        # Try to access internal client-related attributes that CrewAI might use
+        # This is a lightweight check to ensure the LLM is properly constructed
+        model_name = llm.model
+        if not model_name or not isinstance(model_name, str):
+            if verbose:
+                print(f"[Agents] ERROR: {role} LLM has invalid model name: {model_name}")
+            return False
+
+        # For Bedrock models, ensure proper format and test accessibility
+        if model_name.startswith("bedrock/"):
+            model_id = model_name.replace("bedrock/", "")
+            if not model_id:
+                if verbose:
+                    print(f"[Agents] ERROR: {role} LLM has empty Bedrock model ID")
+                return False
+
+            # Test actual Bedrock model accessibility
+            region = os.getenv("AWS_DEFAULT_REGION") or os.getenv("BEDROCK_REGION", "us-east-1")
+            if not test_bedrock_model_access(model_name, region):
+                if verbose:
+                    print(f"[Agents] WARNING: {role} LLM model {model_id} may not be accessible in region {region}")
+                # Don't fail validation for this, just warn - the model might still work for inference
+
+        # Perform a lightweight validation to check if LLM can be used
+        try:
+            # Try to access any internal properties that CrewAI might use
+            # This is to catch cases where the LLM object exists but has None internal clients
+            if hasattr(llm, '_client') and llm._client is None:
+                if verbose:
+                    print(f"[Agents] ERROR: {role} LLM has None internal client")
+                return False
+        except AttributeError:
+            # It's okay if _client doesn't exist - it might be initialized differently
+            pass
+
+        if verbose:
+            print(f"[Agents] SUCCESS: {role} LLM client validation passed")
+        return True
+
+    except Exception as e:
+        if verbose:
+            print(f"[Agents] ERROR: {role} LLM client validation failed: {e}")
+        return False
+
+
 class FaultDiagnosisAgents:
     """Simple factory for creating fault diagnosis crew agents."""
 
@@ -180,12 +248,12 @@ class FaultDiagnosisAgents:
 
         # Initialize Bedrock configuration for LiteLLM first
         if self.verbose:
-            print(f"[Agents] 🔧 Initializing AWS Bedrock for LiteLLM...")
+            print(f"[Agents] Initializing AWS Bedrock for LiteLLM...")
 
         bedrock_ready = initialize_bedrock_for_litellm()
         if not bedrock_ready:
             if self.verbose:
-                print(f"[Agents] ⚠️ Bedrock initialization failed, but continuing with LLM creation...")
+                print(f"[Agents] WARNING: Bedrock initialization failed, but continuing with LLM creation...")
 
         # Use custom models or simple defaults
         self.model_config = custom_models or SIMPLE_MODEL_CONFIG.copy()
@@ -194,9 +262,9 @@ class FaultDiagnosisAgents:
         validation = validate_aws_credentials()
         if self.verbose:
             if validation["credentials_valid"]:
-                print(f"[Agents] ✅ AWS credentials validated for region: {validation['region']}")
+                print(f"[Agents] SUCCESS: AWS credentials validated for region: {validation['region']}")
             else:
-                print(f"[Agents] ⚠️ AWS validation issue: {validation['error_message']}")
+                print(f"[Agents] WARNING: AWS validation issue: {validation['error_message']}")
 
         # Create role-specific LLM instances
         self.llms = {}
@@ -208,41 +276,62 @@ class FaultDiagnosisAgents:
                 if validation["bedrock_accessible"]:
                     model_accessible = test_bedrock_model_access(model_string, validation["region"])
                     if not model_accessible and self.verbose:
-                        print(f"[Agents] ⚠️ Model {model_string} may not be accessible in {validation['region']}")
+                        print(f"[Agents] WARNING: Model {model_string} may not be accessible in {validation['region']}")
 
                 self.llms[role] = LLM(model=model_string)
                 successful_llms += 1
                 if self.verbose:
-                    print(f"[Agents] ✅ Created {role} LLM: {model_string}")
+                    print(f"[Agents] SUCCESS: Created {role} LLM: {model_string}")
 
             except Exception as e:
                 if self.verbose:
-                    print(f"[Agents] ❌ Failed to create {role} LLM: {e}")
-                    print(f"[Agents] 🔄 Attempting fallback for {role}...")
+                    print(f"[Agents] ERROR: Failed to create {role} LLM: {e}")
+                    print(f"[Agents] Attempting fallback for {role}...")
 
                 # Try fallback to default Titan Premier
                 try:
                     self.llms[role] = LLM(model="bedrock/amazon.titan-text-premier-v1:0")
                     successful_llms += 1
                     if self.verbose:
-                        print(f"[Agents] ✅ Created {role} LLM with fallback model")
+                        print(f"[Agents] SUCCESS: Created {role} LLM with fallback model")
                 except Exception as fallback_error:
                     if self.verbose:
-                        print(f"[Agents] ❌ Fallback also failed for {role}: {fallback_error}")
+                        print(f"[Agents] ERROR: Fallback also failed for {role}: {fallback_error}")
                     # Create a placeholder - this will likely fail at runtime but allows initialization to complete
                     self.llms[role] = None
 
+        # Validate all created LLMs
         if self.verbose:
-            print(f"[Agents] 🚀 Simple FaultDiagnosisAgents initialized with {successful_llms}/{len(self.model_config)} LLMs")
+            print(f"[Agents] Validating {successful_llms} created LLMs...")
+
+        validated_llms = 0
+        for role, llm in self.llms.items():
+            if llm is not None and validate_llm_client(llm, role, self.verbose):
+                validated_llms += 1
+
+        if self.verbose:
+            print(f"[Agents] Simple FaultDiagnosisAgents initialized with {successful_llms}/{len(self.model_config)} LLMs ({validated_llms} validated)")
+
+        # Store validation status for diagnostics
+        self.validation_status = {
+            "total_roles": len(self.model_config),
+            "successful_llms": successful_llms,
+            "validated_llms": validated_llms,
+            "aws_validation": validation
+        }
 
     def create_planner_agent(self) -> Agent:
         """Create the NOC Sentinel Planner agent."""
         if self.verbose:
-            print(f"[Agents] 🎯 Creating planner agent")
+            print(f"[Agents] Creating planner agent")
 
         planner_llm = self.llms.get("planner")
         if planner_llm is None:
             raise RuntimeError("Failed to create planner agent: LLM is not available. Check AWS Bedrock configuration.")
+
+        # Validate LLM client before agent creation
+        if not validate_llm_client(planner_llm, "planner", self.verbose):
+            raise RuntimeError("Failed to create planner agent: LLM client validation failed. Check AWS Bedrock configuration and connectivity.")
 
         agent = Agent(
             role="NOC Sentinel Planner",
@@ -258,24 +347,28 @@ class FaultDiagnosisAgents:
                 "specialists are engaged with proper context and priority."
             ),
             verbose=True,
-            allow_delegation=True,  # Manager role can delegate
+            allow_delegation=False,  # Fix: No delegation tools available
             llm=planner_llm,
             max_iter=3,
             max_execution_time=120,  # 2-minute timeout for planning
             memory=True,
         )
         if self.verbose:
-            print(f"[Agents] ✅ Planner agent created")
+            print(f"[Agents] SUCCESS: Planner agent created")
         return agent
 
     def create_retriever_agent(self) -> Agent:
         """Create the Core Network Analyst Retriever agent."""
         if self.verbose:
-            print(f"[Agents] 📊 Creating retriever agent")
+            print(f"[Agents] Creating retriever agent")
 
         retriever_llm = self.llms.get("retriever")
         if retriever_llm is None:
             raise RuntimeError("Failed to create retriever agent: LLM is not available. Check AWS Bedrock configuration.")
+
+        # Validate LLM client before agent creation
+        if not validate_llm_client(retriever_llm, "retriever", self.verbose):
+            raise RuntimeError("Failed to create retriever agent: LLM client validation failed. Check AWS Bedrock configuration and connectivity.")
 
         agent = Agent(
             role="Core Network Analyst",
@@ -299,17 +392,21 @@ class FaultDiagnosisAgents:
             memory=True,
         )
         if self.verbose:
-            print(f"[Agents] ✅ Retriever agent created")
+            print(f"[Agents] SUCCESS: Retriever agent created")
         return agent
 
     def create_reasoner_agent(self) -> Agent:
         """Create the Hypothesis Chair Reasoner agent."""
         if self.verbose:
-            print(f"[Agents] 🧠 Creating reasoner agent")
+            print(f"[Agents] Creating reasoner agent")
 
         reasoner_llm = self.llms.get("reasoner")
         if reasoner_llm is None:
             raise RuntimeError("Failed to create reasoner agent: LLM is not available. Check AWS Bedrock configuration.")
+
+        # Validate LLM client before agent creation
+        if not validate_llm_client(reasoner_llm, "reasoner", self.verbose):
+            raise RuntimeError("Failed to create reasoner agent: LLM client validation failed. Check AWS Bedrock configuration and connectivity.")
 
         agent = Agent(
             role="Hypothesis Chair",
@@ -326,24 +423,28 @@ class FaultDiagnosisAgents:
                 "ability to avoid false conclusions through rigorous validation."
             ),
             verbose=True,
-            allow_delegation=True,   # Senior role can delegate
+            allow_delegation=False,   # Fix: No delegation tools available
             llm=reasoner_llm,
             max_iter=4,
             max_execution_time=300,  # 5-minute timeout for complex reasoning
             memory=True,
         )
         if self.verbose:
-            print(f"[Agents] ✅ Reasoner agent created")
+            print(f"[Agents] SUCCESS: Reasoner agent created")
         return agent
 
     def create_reporter_agent(self) -> Agent:
         """Create the Postmortem Writer Reporter agent."""
         if self.verbose:
-            print(f"[Agents] 📝 Creating reporter agent")
+            print(f"[Agents] Creating reporter agent")
 
         reporter_llm = self.llms.get("reporter")
         if reporter_llm is None:
             raise RuntimeError("Failed to create reporter agent: LLM is not available. Check AWS Bedrock configuration.")
+
+        # Validate LLM client before agent creation
+        if not validate_llm_client(reporter_llm, "reporter", self.verbose):
+            raise RuntimeError("Failed to create reporter agent: LLM client validation failed. Check AWS Bedrock configuration and connectivity.")
 
         agent = Agent(
             role="Postmortem Writer",
@@ -367,7 +468,7 @@ class FaultDiagnosisAgents:
             memory=True,
         )
         if self.verbose:
-            print(f"[Agents] ✅ Reporter agent created")
+            print(f"[Agents] SUCCESS: Reporter agent created")
         return agent
 
 

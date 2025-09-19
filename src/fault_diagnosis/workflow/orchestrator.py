@@ -49,70 +49,49 @@ class SimpleFaultDiagnosisRunner:
         if self.settings.use_rag:
             try:
                 if self.settings.verbose:
-                    print("[Simple] 🔧 Initializing RAG pipeline...")
+                    print("[Simple] Initializing RAG pipeline...")
                 self.rag_pipeline = BedrockRAGPipeline(
                     collection_name="fault_diagnosis",
                     verbose=self.settings.verbose,
                 )
                 if self.settings.verbose:
-                    print("[Simple] ✅ RAG pipeline initialized successfully")
+                    print("[Simple] RAG pipeline initialized successfully")
             except RuntimeError as e:
                 if self.settings.verbose:
-                    print(f"[Simple] ❌ RAG pipeline initialization failed: {e}")
-                    print("[Simple] 💡 Suggestions:")
+                    print(f"[Simple] ERROR: RAG pipeline initialization failed: {e}")
+                    print("[Simple] Suggestions:")
                     print("[Simple] - Check AWS credentials in .env file")
                     print("[Simple] - Verify Bedrock is available in your region")
                     print("[Simple] - Ensure amazon.titan-embed-text-v1 model is enabled")
                 self.rag_pipeline = None
             except Exception as e:
                 if self.settings.verbose:
-                    print(f"[Simple] ❌ RAG pipeline initialization failed with unexpected error: {e}")
+                    print(f"[Simple] ERROR: RAG pipeline initialization failed with unexpected error: {e}")
                 self.rag_pipeline = None
 
         # Initialize CrewAI agents
-        try:
-            if self.settings.verbose:
-                print("[Simple] 🔧 Initializing CrewAI agents...")
-            self.crew = FaultDiagnosisCrew(verbose=self.settings.verbose)
-            if self.settings.verbose:
-                print("[Simple] ✅ CrewAI crew initialized successfully")
-        except RuntimeError as e:
-            if self.settings.verbose:
-                print(f"[Simple] ❌ CrewAI initialization failed: {e}")
-                print("[Simple] 💡 This is likely due to AWS Bedrock client issues")
-                print("[Simple] 🔄 Workflow will use simplified mode without AI agents")
-            self.crew = None
-        except Exception as e:
-            if self.settings.verbose:
-                print(f"[Simple] ❌ CrewAI initialization failed with unexpected error: {e}")
-                print("[Simple] 🔄 Workflow will use simplified mode without AI agents")
-            self.crew = None
+        if self.settings.verbose:
+            print("[Simple] Initializing CrewAI agents...")
+        self.crew = FaultDiagnosisCrew(verbose=self.settings.verbose)
+        if self.settings.verbose:
+            print("[Simple] CrewAI crew initialized successfully")
 
         # Initialize LangGraph workflow
-        if self.crew:
-            try:
-                if self.settings.verbose:
-                    print("[Simple] 🔧 Initializing LangGraph workflow...")
-                workflow_config = WorkflowConfig(
-                    confidence_threshold=0.7,
-                    enable_rag=self.rag_pipeline is not None,
-                    enable_validation=True,
-                    verbose=self.settings.verbose,
-                )
-                self.workflow = FaultDiagnosisWorkflow(
-                    crew=self.crew,
-                    rag_pipeline=self.rag_pipeline,
-                    config=workflow_config,
-                )
-                if self.settings.verbose:
-                    print("[Simple] ✅ LangGraph workflow initialized successfully")
-            except Exception as e:
-                if self.settings.verbose:
-                    print(f"[Simple] ❌ LangGraph workflow initialization failed: {e}")
-                self.workflow = None
-        else:
-            if self.settings.verbose:
-                print("[Simple] ⚠️ Skipping LangGraph workflow - CrewAI not available")
+        if self.settings.verbose:
+            print("[Simple] Initializing LangGraph workflow...")
+        workflow_config = WorkflowConfig(
+            confidence_threshold=0.7,
+            enable_rag=self.rag_pipeline is not None,
+            enable_validation=True,
+            verbose=self.settings.verbose,
+        )
+        self.workflow = FaultDiagnosisWorkflow(
+            crew=self.crew,
+            rag_pipeline=self.rag_pipeline,
+            config=workflow_config,
+        )
+        if self.settings.verbose:
+            print("[Simple] LangGraph workflow initialized successfully")
 
     def run(self) -> Dict:
         """Run the simple fault diagnosis workflow."""
@@ -152,44 +131,99 @@ class SimpleFaultDiagnosisRunner:
             "type": "connectivity"
         })
 
-        # Run workflow with fallback mechanisms
-        if self.workflow:
-            try:
-                if self.settings.verbose:
-                    print("[Simple] 🚀 Running LangGraph workflow...")
-                workflow_results = self.workflow.run(alert_data, payloads)
-                if self.settings.verbose:
-                    print("[Simple] ✅ LangGraph workflow completed successfully")
-                return workflow_results
-            except Exception as e:
-                if self.settings.verbose:
-                    print(f"[Simple] ❌ LangGraph workflow error: {e}")
-                    print(f"[Simple] 🔄 Falling back to direct CrewAI execution...")
-                # Fall through to crew fallback
-        else:
-            if self.settings.verbose:
-                print("[Simple] ⚠️ LangGraph workflow not available, using CrewAI directly")
+        # Run LangGraph workflow
+        if self.settings.verbose:
+            print("[Simple] Running LangGraph workflow...")
+        workflow_results = self.workflow.run(alert_data, payloads)
+        if self.settings.verbose:
+            print("[Simple] LangGraph workflow completed successfully")
+        return workflow_results
 
-        # Fallback to basic crew execution
-        if self.crew:
-            try:
-                if self.settings.verbose:
-                    print("[Simple] 🚀 Running CrewAI fault diagnosis...")
-                crew_results = self.crew.run_fault_diagnosis(alert_data, payloads)
-                if self.settings.verbose:
-                    print("[Simple] ✅ CrewAI execution completed successfully")
-                return crew_results
-            except Exception as e:
-                if self.settings.verbose:
-                    print(f"[Simple] ❌ CrewAI execution error: {e}")
-                    print(f"[Simple] 🔄 Falling back to simplified analysis...")
-                # Fall through to simplified fallback
-        else:
-            if self.settings.verbose:
-                print("[Simple] ⚠️ CrewAI not available, using simplified analysis")
+    def _run_simplified_analysis(self, alert_data: Dict, payloads: Dict) -> Dict:
+        """Run a simplified analysis without AI agents as final fallback."""
+        if self.settings.verbose:
+            print("[Simple] Running simplified analysis (no AI agents available)")
 
-        # Final fallback: simplified analysis without AI
-        return self._run_simplified_analysis(alert_data, payloads)
+        # Create basic analysis based on available data
+        analysis_results = {
+            "alert_context": alert_data,
+            "fixtures": payloads,
+            "current_stage": "complete",
+            "messages": [],
+            "planning_result": None,
+            "evidence_bundle": {
+                "rag_context": "AI agents not available - using simplified analysis",
+                "fixtures": payloads,
+                "log_analysis": "System logs indicate network connectivity issues",
+                "topology_check": "Network topology shows potential bottlenecks",
+                "kpi_metrics": "Performance metrics below threshold"
+            },
+            "hypotheses": [
+                {
+                    "index": 1,
+                    "statement": "Network connectivity issue detected based on alert analysis",
+                    "confidence": 0.7,
+                    "verdict": "Grounded",
+                    "citation": "alert_analysis.log"
+                },
+                {
+                    "index": 2,
+                    "statement": "Potential configuration drift in network settings",
+                    "confidence": 0.5,
+                    "verdict": "Grounded",
+                    "citation": "system_config.json"
+                }
+            ],
+            "validation_results": {
+                1: {"validation_score": 1.0, "criteria_met": {"has_citation": True, "confidence_ok": True, "statement_valid": True}},
+                2: {"validation_score": 1.0, "criteria_met": {"has_citation": True, "confidence_ok": True, "statement_valid": True}}
+            },
+            "remediation_plan": {
+                "primary_hypothesis": "Network connectivity issue detected based on alert analysis",
+                "confidence": 0.7,
+                "steps": [
+                    "Verify the identified issue through manual inspection",
+                    "Apply recommended remediation steps",
+                    "Monitor system recovery",
+                    "Document resolution for future reference"
+                ],
+                "estimated_time": "30 minutes"
+            },
+            "final_report": {
+                "workflow_summary": {
+                    "alert_processed": alert_data,
+                    "hypotheses_count": 2,
+                    "resolution_path": "remediation",
+                    "stage_completed": "remediation_planned"
+                },
+                "analysis_results": {
+                    "hypotheses": [],
+                    "validation_results": {},
+                    "evidence_sources": ["simplified_analysis"]
+                },
+                "outcome": {
+                    "primary_hypothesis": "Network connectivity issue detected based on alert analysis",
+                    "confidence": 0.7,
+                    "steps": [
+                        "Verify the identified issue through manual inspection",
+                        "Apply recommended remediation steps",
+                        "Monitor system recovery",
+                        "Document resolution for future reference"
+                    ],
+                    "estimated_time": "30 minutes"
+                },
+                "citations": ["simplified_analysis (Basic rule-based analysis) - Relevance: 1.00"]
+            },
+            "rag_context": None,
+            "citations": ["simplified_analysis (Basic rule-based analysis) - Relevance: 1.00"],
+            "needs_escalation": False,
+            "confidence_threshold": 0.7
+        }
+
+        if self.settings.verbose:
+            print("[Simple] Simplified analysis completed successfully")
+
+        return analysis_results
 
     def get_status(self) -> Dict:
         """Get simple status of initialized components."""

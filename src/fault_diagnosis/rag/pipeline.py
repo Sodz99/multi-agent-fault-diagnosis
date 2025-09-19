@@ -124,9 +124,9 @@ class BedrockRAGPipeline:
 
         if self.verbose:
             if validation["credentials_valid"]:
-                print(f"[RAG] ✅ AWS credentials validated for region: {validation['region']}")
+                print(f"[RAG] AWS credentials validated for region: {validation['region']}")
             else:
-                print(f"[RAG] ❌ AWS validation failed: {validation['error_message']}")
+                print(f"[RAG] ERROR: AWS validation failed: {validation['error_message']}")
 
         if not validation["credentials_valid"]:
             raise RuntimeError(f"AWS credentials validation failed: {validation['error_message']}")
@@ -148,7 +148,7 @@ class BedrockRAGPipeline:
             # Test embeddings client
             if validation["embeddings_model_available"]:
                 if self.verbose:
-                    print(f"[RAG] ✅ Embeddings model verified and accessible")
+                    print(f"[RAG] Embeddings model verified and accessible")
             else:
                 if self.verbose:
                     print(f"[RAG] ⚠️ Embeddings model validation warning: {validation['error_message']}")
